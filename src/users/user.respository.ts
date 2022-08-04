@@ -80,4 +80,8 @@ export class UsersRepository {
       where: criteria,
     });
   }
+
+  async deleteAllUsers(): Promise<Prisma.BatchPayload> {
+    return this.prismaService.users.deleteMany();
+  }
 }

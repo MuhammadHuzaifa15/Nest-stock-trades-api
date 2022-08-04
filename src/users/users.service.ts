@@ -7,7 +7,7 @@ import { UsersRepository } from './user.respository';
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async createAsync(params: ICreate) {
+  async create(params: ICreate) {
     const { name } = params;
 
     const existingUser = await this.usersRepository.getByName(name);
@@ -25,7 +25,7 @@ export class UsersService {
     return new Response(201, user);
   }
 
-  async updateAsync(params: IUpdate) {
+  async update(params: IUpdate) {
     const { id, name } = params;
 
     // check if name already exists
@@ -52,7 +52,7 @@ export class UsersService {
     return new Response(200, updatedUser);
   }
 
-  async getUsers(params: IGetAll): Promise<Response> {
+  async getAll(params: IGetAll): Promise<Response> {
     const { name, sort } = params;
     let { size, page } = params;
 
@@ -88,5 +88,14 @@ export class UsersService {
     const pageable = { totalElements: count, page, size };
 
     return new Response(200, { users: users, pageable });
+  }
+
+  async getById(id: number) {
+    const user = await this.usersRepository.getById(id);
+
+    if (!user) {
+      return new Response(404).setMsg('User not found!');
+    }
+    return new Response(200, user);
   }
 }

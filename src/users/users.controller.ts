@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { IGetAll, ICreate, IUpdate } from './Dto/Request';
 import { UsersService } from './users.service';
 import { Response } from 'src/common/models';
@@ -8,9 +8,9 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Post()
-  async create(@Body() user: ICreate) {
+  async create(@Body() user: ICreate): Promise<Response> {
     try {
-      return await this.userService.createAsync(user);
+      return await this.userService.create(user);
     } catch (err) {
       if (err instanceof Error) {
         console.log(err.message);
@@ -20,9 +20,9 @@ export class UsersController {
   }
 
   @Put()
-  async update(@Body() user: IUpdate) {
+  async update(@Body() user: IUpdate): Promise<Response> {
     try {
-      return await this.userService.updateAsync(user);
+      return await this.userService.update(user);
     } catch (err) {
       if (err instanceof Error) {
         console.log(err.message);
@@ -34,7 +34,18 @@ export class UsersController {
   @Get()
   async getUsers(@Query() query: IGetAll): Promise<Response> {
     try {
-      return await this.userService.getUsers(query);
+      return await this.userService.getAll(query);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      }
+      return new Response(500).setMsg('Server error');
+    }
+  }
+  @Get(':id')
+  async getUserById(@Param('id') id: string): Promise<Response> {
+    try {
+      return await this.userService.getById(Number(id));
     } catch (err) {
       if (err instanceof Error) {
         console.log(err.message);
