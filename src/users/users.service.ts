@@ -1,11 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { JSONLike, Response } from 'src/common/models';
-import { IGetAll } from './Dto/Request';
+import { ICreate, IGetAll, IUpdate } from './Dto/Request';
 import { UsersRepository } from './user.respository';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
+
+  async createAsync(params: ICreate) {
+    const { name } = params;
+
+    const existingUser = await this.usersRepository.getByName(name);
+
+    if (existingUser) {
+      return new Response(409).setMsg('User Already Exist');
+    }
+
+    const user = await this.usersRepository.create({
+      name,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    return new Response(201, user);
+  }
+
+  async updateAsync(params: IUpdate) {
+    const { id, name } = params;
+
+    // check if name already exists
+    let existingUser = await this.usersRepository.getById(id);
+
+    if (!existingUser) {
+      return new Response(404).setMsg('User not found!');
+    }
+    if (name !== existingUser.name) {
+      existingUser = await this.usersRepository.getByName(name);
+
+      if (existingUser) {
+        return new Response(409).setMsg('User Already Exist');
+      }
+    }
+
+    await this.usersRepository.update({
+      id,
+      name,
+    });
+
+    const updatedUser = await this.usersRepository.getById(id);
+
+    return new Response(200, updatedUser);
+  }
 
   async getUsers(params: IGetAll): Promise<Response> {
     const { name, sort } = params;

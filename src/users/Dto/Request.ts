@@ -4,3 +4,12 @@ export interface IGetAll {
   page: string;
   sort: string;
 }
+
+export interface ICreate {
+  name: string;
+}
+
+export interface IUpdate {
+  id: number;
+  name: string;
+}

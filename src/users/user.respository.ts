@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { users } from '@prisma/client';
+import { Prisma, users } from '@prisma/client';
 import { JSONLike } from 'src/common/models';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -7,14 +7,38 @@ import { PrismaService } from '../prisma/prisma.service';
 export class UsersRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  getAll = async (filters: {
+  async create(payload: Prisma.usersCreateInput): Promise<users> {
+    return this.prismaService.users.create({
+      data: payload,
+    });
+  }
+
+  async update({ id, name }: { id: number; name: string }): Promise<users> {
+    const criteria: Prisma.usersWhereUniqueInput = { id };
+
+    return this.prismaService.users.update({
+      data: {
+        name,
+      },
+      where: criteria,
+    });
+  }
+
+  async getById(id: number | undefined): Promise<users> {
+    const criteria: Prisma.usersWhereInput = { isDeleted: false, id };
+    return this.prismaService.users.findFirst({
+      where: criteria,
+    });
+  }
+
+  async getAll(filters: {
     name?: string;
     limit: number;
     offset: number;
     sort: JSONLike;
-  }): Promise<users[]> => {
+  }): Promise<users[]> {
     const { name, offset, limit, sort } = filters;
-    const criteria: JSONLike = { isDeleted: false };
+    const criteria: Prisma.usersWhereInput = { isDeleted: false };
 
     if (name) {
       criteria.name = {
@@ -22,20 +46,17 @@ export class UsersRepository {
       };
     }
 
-    return await this.prismaService.users.findMany({
+    return this.prismaService.users.findMany({
       skip: offset,
       take: limit,
       where: criteria,
       orderBy: sort,
     });
-  };
+  }
 
-  count = async (filters: {
-    name?: string;
-    sort: JSONLike;
-  }): Promise<number> => {
+  async count(filters: { name?: string; sort: JSONLike }): Promise<number> {
     const { name, sort } = filters;
-    const criteria: JSONLike = { isDeleted: false };
+    const criteria: Prisma.usersWhereInput = { isDeleted: false };
 
     if (name) {
       criteria.name = {
@@ -43,9 +64,20 @@ export class UsersRepository {
       };
     }
 
-    return await this.prismaService.users.count({
+    return this.prismaService.users.count({
       where: criteria,
       orderBy: sort,
     });
-  };
+  }
+
+  async getByName(name: string): Promise<users> {
+    const criteria: Prisma.usersWhereInput = { isDeleted: false };
+
+    if (name) {
+      criteria.name = name;
+    }
+    return this.prismaService.users.findFirst({
+      where: criteria,
+    });
+  }
 }

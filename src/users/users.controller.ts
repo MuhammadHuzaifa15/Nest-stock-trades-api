@@ -1,17 +1,40 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { IGetAll } from './Dto/Request';
+import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { IGetAll, ICreate, IUpdate } from './Dto/Request';
 import { UsersService } from './users.service';
 import { Response } from 'src/common/models';
 
-@Controller()
+@Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
-  @Get('users')
+  @Post()
+  async create(@Body() user: ICreate) {
+    try {
+      return await this.userService.createAsync(user);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      }
+      return new Response(500).setMsg('Server error');
+    }
+  }
+
+  @Put()
+  async update(@Body() user: IUpdate) {
+    try {
+      return await this.userService.updateAsync(user);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      }
+      return new Response(500).setMsg('Server error');
+    }
+  }
+
+  @Get()
   async getUsers(@Query() query: IGetAll): Promise<Response> {
     try {
-      const result = await this.userService.getUsers(query);
-      return result;
+      return await this.userService.getUsers(query);
     } catch (err) {
       if (err instanceof Error) {
         console.log(err.message);
