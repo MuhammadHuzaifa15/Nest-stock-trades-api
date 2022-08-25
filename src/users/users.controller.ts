@@ -1,8 +1,17 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { IGetAll, ICreate, IUpdate } from './Dto/Request';
 import { UsersService } from './users.service';
 import { Response } from 'src/common/models';
-
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
@@ -43,7 +52,13 @@ export class UsersController {
     }
   }
   @Get(':id')
-  async getUserById(@Param('id') id: string): Promise<Response> {
+  async getUserById(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: string,
+  ): Promise<Response> {
     try {
       return await this.userService.getById(Number(id));
     } catch (err) {

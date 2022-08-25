@@ -1,3 +1,5 @@
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+
 export interface IGetAll {
   name: string;
   size: string;
@@ -5,11 +7,17 @@ export interface IGetAll {
   sort: string;
 }
 
-export interface ICreate {
+export class ICreate {
+  @IsString()
+  @IsNotEmpty()
   name: string;
 }
 
-export interface IUpdate {
+export class IUpdate {
+  @IsNumber()
   id: number;
+
+  @IsString()
+  @IsNotEmpty()
   name: string;
 }
