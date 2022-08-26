@@ -16,6 +16,6 @@ export class AuthService {
       return new Response(404).setMsg('Account not found.');
     }
 
-    return new Response(200, user);
+    return new Response(200, { id: user.id });
   }
 }
