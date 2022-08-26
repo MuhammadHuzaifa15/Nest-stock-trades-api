@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Response } from 'src/common/models';
 import { ISignIn } from './Dto/Request';
-import { UsersRepository } from '../users/user.respository';
+import { UsersRepository } from '../users/user.repository';
 
 @Injectable()
 export class AuthService {

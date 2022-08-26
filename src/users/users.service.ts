@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JSONLike, Response } from 'src/common/models';
 import { ICreate, IGetAll, IUpdate } from './Dto/Request';
-import { UsersRepository } from './user.respository';
+import { UsersRepository } from './user.repository';
 
 @Injectable()
 export class UsersService {
